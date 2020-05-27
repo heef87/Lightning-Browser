@@ -1,0 +1,149 @@
+diff --git a/app/src/main/java/acr/browser/lightning/activity/BrowserActivity.java b/app/src/main/java/acr/browser/lightning/activity/BrowserActivity.java
+index f4cd8e2..cba984a 100644
+--- a/app/src/main/java/acr/browser/lightning/activity/BrowserActivity.java
++++ b/app/src/main/java/acr/browser/lightning/activity/BrowserActivity.java
+@@ -150,7 +150,7 @@ public abstract class BrowserActivity extends ThemableBrowserActivity implements
+     @Bind(R.id.toolbar) Toolbar mToolbar;
+     private View mSearchBackground;
+     private SearchView mSearch;
+-    private ImageView mArrowImage;
++    //private ImageView mArrowImage;
+ 
+     // Current tab view being displayed
+     @Nullable private View mCurrentView;
+@@ -330,19 +330,19 @@ public abstract class BrowserActivity extends ThemableBrowserActivity implements
+         lp.height = LayoutParams.MATCH_PARENT;
+         customView.setLayoutParams(lp);
+ 
+-        mArrowImage = (ImageView) customView.findViewById(R.id.arrow);
+-        FrameLayout arrowButton = (FrameLayout) customView.findViewById(R.id.arrow_button);
+-        if (mShowTabsInDrawer) {
+-            if (mArrowImage.getWidth() <= 0) {
+-                mArrowImage.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+-            }
+-            updateTabNumber(0);
+-        } else {
+-            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, getTabDrawer());
+-            mArrowImage.setImageResource(R.drawable.ic_action_home);
+-            mArrowImage.setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
+-        }
+-        arrowButton.setOnClickListener(this);
++        //mArrowImage = (ImageView) customView.findViewById(R.id.arrow);
++        //FrameLayout arrowButton = (FrameLayout) customView.findViewById(R.id.arrow_button);
++        //if (mShowTabsInDrawer) {
++        //    if (mArrowImage.getWidth() <= 0) {
++        //        mArrowImage.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
++        //    }
++        //    updateTabNumber(0);
++        //} else {
++        //    mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, getTabDrawer());
++        //    mArrowImage.setImageResource(R.drawable.ic_action_home);
++        //    mArrowImage.setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
++        //}
++        //arrowButton.setOnClickListener(this);
+ 
+         // create the search EditText in the ToolBar
+         mSearch = (SearchView) customView.findViewById(R.id.search);
+@@ -373,6 +373,26 @@ public abstract class BrowserActivity extends ThemableBrowserActivity implements
+         mSearch.setOnTouchListener(search);
+         mSearch.setOnPreFocusListener(search);
+ 
++        mSearch.setOnClickListener(new OnClickListener() {
++            @Override
++            public void onClick(View v) {
++                Log.e(TAG, "onClick Search");
++                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
++                imm.toggleSoftInput(0,InputMethodManager.HIDE_NOT_ALWAYS);
++            }
++        });
++        mSearchBackground.setOnClickListener(new OnClickListener() {
++            @Override
++            public void onClick(View v) {
++                Log.e(TAG, "onClick Search");
++
++                mSearch.requestFocus();
++                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
++                imm.toggleSoftInput(0,InputMethodManager.HIDE_NOT_ALWAYS);
++            }
++        });
++        mSearchBackground.requestFocus();
++
+         initializeSearchSuggestions(mSearch);
+ 
+         mDrawerLayout.setDrawerShadow(R.drawable.drawer_right_shadow, GravityCompat.END);
+@@ -399,6 +419,8 @@ public abstract class BrowserActivity extends ThemableBrowserActivity implements
+             setIntent(null);
+             mProxyUtils.checkForProxy(this);
+         }
++
++        mSearch.requestFocus();
+     }
+ 
+     @IdRes
+@@ -525,6 +547,8 @@ public abstract class BrowserActivity extends ThemableBrowserActivity implements
+             } else {
+                 mSearch.setText(url);
+             }
++            mSearch.requestFocus();
++            Log.e(TAG, "on PreFocus === add by huangkaihui ===");
+         }
+     }
+ 
+@@ -1465,10 +1489,10 @@ public abstract class BrowserActivity extends ThemableBrowserActivity implements
+ 
+     @Override
+     public void updateTabNumber(int number) {
+-        if (mArrowImage != null && mShowTabsInDrawer) {
+-            mArrowImage.setImageBitmap(DrawableUtils.getRoundedNumberImage(number, Utils.dpToPx(24),
+-                Utils.dpToPx(24), ThemeUtils.getIconThemeColor(this, mDarkTheme), Utils.dpToPx(2.5f)));
+-        }
++        //if (mArrowImage != null && mShowTabsInDrawer) {
++        //    mArrowImage.setImageBitmap(DrawableUtils.getRoundedNumberImage(number, Utils.dpToPx(24),
++        //        Utils.dpToPx(24), ThemeUtils.getIconThemeColor(this, mDarkTheme), Utils.dpToPx(2.5f)));
++        //}
+     }
+ 
+     @Override
+@@ -1876,6 +1900,7 @@ public abstract class BrowserActivity extends ThemableBrowserActivity implements
+         if (hasFocus) {
+             setFullscreen(mIsFullScreen, mIsImmersive);
+         }
++        mSearch.requestFocus();
+     }
+ 
+     @Override
+diff --git a/app/src/main/res/layout/search.xml b/app/src/main/res/layout/search.xml
+index 5c8d4d6..5ac1fc8 100644
+--- a/app/src/main/res/layout/search.xml
++++ b/app/src/main/res/layout/search.xml
+@@ -11,9 +11,10 @@
+     android:background="?attr/searchBackground"
+     android:clipChildren="false"
+     android:clipToPadding="false"
+-    android:descendantFocusability="beforeDescendants"
++    android:descendantFocusability="afterDescendants"
+     android:elevation="2dp"
+     android:focusableInTouchMode="true"
++    android:focusable="true"
+     android:gravity="center">
+ 
+     <acr.browser.lightning.view.SearchView
+@@ -21,6 +22,8 @@
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:background="@null"
++        android:duplicateParentState="true"
++        android:focusable="true"
+         android:gravity="left|center_vertical"
+         android:hint="@string/search_hint"
+         android:imeOptions="actionGo"
+@@ -31,7 +34,6 @@
+         android:paddingTop="1dp"
+         android:singleLine="true"
+         android:textColor="@color/gray_dark"
+-        android:textColorHint="@color/hint_text"
+-        android:textCursorDrawable="@null"/>
++        android:textColorHint="@color/hint_text" />
+ 
+ </LinearLayout>
+\ No newline at end of file

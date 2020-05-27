@@ -1,0 +1,25 @@
+diff --git a/app/src/main/res/layout/search.xml b/app/src/main/res/layout/search.xml
+index 5c8d4d6..e63bca6 100644
+--- a/app/src/main/res/layout/search.xml
++++ b/app/src/main/res/layout/search.xml
+@@ -11,9 +11,10 @@
+     android:background="?attr/searchBackground"
+     android:clipChildren="false"
+     android:clipToPadding="false"
+-    android:descendantFocusability="beforeDescendants"
++    android:descendantFocusability="afterDescendants"
+     android:elevation="2dp"
+     android:focusableInTouchMode="true"
++    android:focusable="true"
+     android:gravity="center">
+ 
+     <acr.browser.lightning.view.SearchView
+@@ -21,6 +22,8 @@
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:background="@null"
++        android:duplicateParentState="true"
++        android:focusable="true"
+         android:gravity="left|center_vertical"
+         android:hint="@string/search_hint"
+         android:imeOptions="actionGo"
