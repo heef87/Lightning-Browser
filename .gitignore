@@ -1,0 +1,7 @@
+/.gradle/
+/.idea/
+/app/build/
+/app/app.iml
+/build/
+/Lightning-Browser.iml
+/local.properties
